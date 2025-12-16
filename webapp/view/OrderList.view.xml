@@ -13,36 +13,36 @@
         <dependents>
             <ColumnListItem id="orderListItemTemplate" type="Active">
                 <cells>
-                    <Text id="cellOrderNumber" text="{jsonOrders>Aufnr}" maxLines="2"/> 
+                    <Text id="cellOrderNumber" text="{parts: [{path: 'jsonOrders>Aufnr'}, {path: 'jsonOrders>OrderNumber'}], formatter: '.formatter.fallback'}" maxLines="2"/> 
                     
-                    <Text id="cellOrderType" text="{jsonOrders>Aurt}" maxLines="2"/>
+                    <Text id="cellOrderType" text="{parts: [{path: 'jsonOrders>Aurt'}, {path: 'jsonOrders>OrderType'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
-                    <Text id="cellPlant" text="{jsonOrders>Werks}" maxLines="2"/>
+                    <Text id="cellPlant" text="{parts: [{path: 'jsonOrders>Werks'}, {path: 'jsonOrders>PlanningPlant'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
-                    <Text id="cellDescription" text="{jsonOrders>Ktext}" maxLines="2"/>
+                    <Text id="cellDescription" text="{parts: [{path: 'jsonOrders>Ktext'}, {path: 'jsonOrders>PlanningStatus'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
                     <Text id="cellStartDate" 
-                          text="{path: 'jsonOrders>Gstrp', formatter: '.formatter.date'}" 
+                          text="{parts: [{path: 'jsonOrders>Gstrp'}, {path: 'jsonOrders>StartDate'}], formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
                     <Text id="cellEndDate" 
-                          text="{path: 'jsonOrders>Gltrp', formatter: '.formatter.date'}" 
+                          text="{parts: [{path: 'jsonOrders>Gltrp'}, {path: 'jsonOrders>EndDate'}], formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
-                    <Text id="cellQuantity" text="{jsonOrders>Gamng}" maxLines="2"/>
+                    <Text id="cellQuantity" text="{parts: [{path: 'jsonOrders>Gamng'}, {path: 'jsonOrders>PlannedQuantity'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
-                    <Text id="cellUnit" text="{jsonOrders>Gmein}" maxLines="2"/>
+                    <Text id="cellUnit" text="{parts: [{path: 'jsonOrders>Gmein'}, {path: 'jsonOrders>Unit'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
-                    <Text id="cellCreator" text="{jsonOrders>Ernam}" maxLines="2"/>
+                    <Text id="cellCreator" text="{parts: [{path: 'jsonOrders>Ernam'}, {path: 'jsonOrders>Creator'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
                     <Text id="cellStockCreation" 
-                          text="{path: 'jsonOrders>Erdat', formatter: '.formatter.date'}" 
+                          text="{parts: [{path: 'jsonOrders>Erdat'}, {path: 'jsonOrders>StockCategory'}], formatter: '.formatter.fallback'}" 
                           maxLines="2"/>
                     
-                    <Text id="cellProdPlant" text="{jsonOrders>Objnr}" maxLines="2"/>
+                    <Text id="cellProdPlant" text="{parts: [{path: 'jsonOrders>Objnr'}, {path: 'jsonOrders>ProductionPlant'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
                     <Text id="cellMrpFtrmi" 
-                          text="{path: 'jsonOrders>Ftrmi', formatter: '.formatter.date'}" 
+                          text="{parts: [{path: 'jsonOrders>Ftrmi'}, {path: 'jsonOrders>MrpGroup'}], formatter: '.formatter.fallback'}" 
                           maxLines="2"/>
                     
                     <Text id="cellFtrmp" text="{path: 'jsonOrders>Ftrmp', formatter: '.formatter.date'}" maxLines="2"/>

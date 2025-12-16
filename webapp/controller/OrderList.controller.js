@@ -16,24 +16,45 @@ sap.ui.define([
         _sCurrentUserId: null,
 
         formatter: {
-            date: function (sDate) {
-                // ... (Formatter remains unchanged)
-                if (!sDate || sDate === '0000-00-00') {
+            fallback: function (v1, v2) {
+                // If v1 is valid (truthy or 0), use it. Otherwise use v2.
+                if (v1 !== null && v1 !== undefined && v1 !== "") {
+                    return v1;
+                }
+                return v2;
+            },
+
+            date: function (sDate, sDate2) {
+                // Determine which date value is valid (Prod or Planned)
+                var sValue = sDate;
+                if (!sValue || sValue === "") {
+                    sValue = sDate2;
+                }
+
+                if (!sValue || sValue === '0000-00-00') {
                     return "";
                 }
 
                 try {
-                    if (typeof sDate === 'string' && sDate.length === 8 && sDate.match(/^\d{8}$/)) {
-                        sDate = sDate.substring(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8);
+                    // Handle ASP.NET/OData JSON Date format "/Date(1750636800000)/"
+                    if (typeof sValue === 'string' && sValue.indexOf("/Date(") !== -1) {
+                        var sTimestamp = sValue.replace(/\/Date\((-?\d+)\)\//, '$1');
+                        var d = new Date(parseInt(sTimestamp, 10));
+                        return oDateFormat.format(d);
                     }
 
-                    var d = new Date(sDate);
+                    // Handle "yyyyMMdd" string (Standard ABAP date)
+                    if (typeof sValue === 'string' && sValue.length === 8 && sValue.match(/^\d{8}$/)) {
+                        sValue = sValue.substring(0, 4) + "-" + sValue.substring(4, 6) + "-" + sValue.substring(6, 8);
+                    }
+
+                    var d = new Date(sValue);
                     if (isNaN(d.getTime())) {
-                        return sDate;
+                        return sValue;
                     }
                     return oDateFormat.format(d);
                 } catch (e) {
-                    return sDate;
+                    return sValue;
                 }
             }
         },

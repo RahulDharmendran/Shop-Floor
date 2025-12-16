@@ -17,44 +17,52 @@ sap.ui.define([
 
         formatter: {
             fallback: function (v1, v2) {
-                // If v1 is valid (truthy or 0), use it. Otherwise use v2.
+                // Return v1 if valid
                 if (v1 !== null && v1 !== undefined && v1 !== "") {
                     return v1;
                 }
-                return v2;
+                // Else return v2 if valid
+                if (v2 !== null && v2 !== undefined && v2 !== "") {
+                    return v2;
+                }
+                // Else return NA
+                return "NA";
             },
 
             date: function (sDate, sDate2) {
-                // Determine which date value is valid (Prod or Planned)
+                // Determine which value to use
                 var sValue = sDate;
                 if (!sValue || sValue === "") {
                     sValue = sDate2;
                 }
 
-                if (!sValue || sValue === '0000-00-00') {
-                    return "";
+                // Check for invalid or empty dates
+                if (!sValue || sValue === "" || sValue === "0000-00-00") {
+                    return "NA";
                 }
 
                 try {
                     // Handle ASP.NET/OData JSON Date format "/Date(1750636800000)/"
-                    if (typeof sValue === 'string' && sValue.indexOf("/Date(") !== -1) {
-                        var sTimestamp = sValue.replace(/\/Date\((-?\d+)\)\//, '$1');
-                        var d = new Date(parseInt(sTimestamp, 10));
-                        return oDateFormat.format(d);
+                    if (typeof sValue === 'string' && sValue.indexOf("Date(") !== -1) {
+                        var aMatches = /\/Date\((-?\d+)\)\//.exec(sValue);
+                        if (aMatches) {
+                            var d = new Date(parseInt(aMatches[1], 10));
+                            return oDateFormat.format(d);
+                        }
                     }
 
-                    // Handle "yyyyMMdd" string (Standard ABAP date)
+                    // Handle "yyyyMMdd" string (Standard ABAP date) without dashes
                     if (typeof sValue === 'string' && sValue.length === 8 && sValue.match(/^\d{8}$/)) {
                         sValue = sValue.substring(0, 4) + "-" + sValue.substring(4, 6) + "-" + sValue.substring(6, 8);
                     }
 
                     var d = new Date(sValue);
                     if (isNaN(d.getTime())) {
-                        return sValue;
+                        return "NA"; // Invalid Date parsing
                     }
                     return oDateFormat.format(d);
                 } catch (e) {
-                    return sValue;
+                    return "NA";
                 }
             }
         },
@@ -176,7 +184,7 @@ sap.ui.define([
         onFilterSearch: function () {
             var sYear = this.byId("filterYear").getSelectedKey();
             var sMonth = this.byId("filterMonth").getSelectedKey();
-            var sMode = this.getView().getModel("viewModel").getProperty("/mode"); // Month or Year
+            var sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
             var oTable = this.byId("ordersTable");
             var oBinding = oTable.getBinding("items");
@@ -187,56 +195,48 @@ sap.ui.define([
             var sDateField = (this._sOrderType === "PLANNED") ? "StartDate" : "Gstrp";
 
             // Client-Side Filter Function
-            // Extract YYYY and MM from the record's date field and compare
             var fnDateFilter = function (sValue) {
-                if (!sValue || sValue === "0000-00-00") {
+                if (!sValue || sValue === "0000-00-00" || sValue === "" || sValue === "NA") {
                     return false;
                 }
 
                 var oDate = null;
 
-                // Handle "/Date(123456)/" format
-                if (typeof sValue === 'string' && sValue.indexOf("/Date(") !== -1) {
-                    var sTimestamp = sValue.replace(/\/Date\((-?\d+)\)\//, '$1');
-                    oDate = new Date(parseInt(sTimestamp, 10));
-                }
-                // Handle "YYYY-MM-DD" or "YYYYMMDD" string
-                else if (typeof sValue === 'string') {
-                    if (sValue.length === 8 && sValue.match(/^\d{8}$/)) {
-                        // 20250612 -> 2025-06-12
-                        var y = sValue.substring(0, 4);
-                        var m = sValue.substring(4, 6);
-                        var d = sValue.substring(6, 8);
-                        oDate = new Date(y + "-" + m + "-" + d);
-                    } else {
-                        // Assume already YYYY-MM-DD
-                        oDate = new Date(sValue);
+                // 1. Handle "/Date(...)/"
+                if (typeof sValue === 'string' && sValue.indexOf("Date(") !== -1) {
+                    var aMatches = /\/Date\((-?\d+)\)\//.exec(sValue);
+                    if (aMatches) {
+                        oDate = new Date(parseInt(aMatches[1], 10));
                     }
                 }
-                // Handle Date Object
-                else if (sValue instanceof Date) {
-                    oDate = sValue;
+                // 2. Handle "YYYYMMDD"
+                else if (typeof sValue === 'string' && sValue.length === 8 && sValue.match(/^\d{8}$/)) {
+                    var y = sValue.substring(0, 4);
+                    var m = sValue.substring(4, 6);
+                    var d = sValue.substring(6, 8);
+                    oDate = new Date(y + "-" + m + "-" + d);
+                }
+                // 3. Handle Standard Date String or Date Object
+                else {
+                    oDate = new Date(sValue);
                 }
 
                 if (!oDate || isNaN(oDate.getTime())) {
-                    return false; // Invalid date
+                    return false;
                 }
 
                 var iRecordYear = oDate.getFullYear();
-                var iRecordMonth = oDate.getMonth(); // 0-11
+                var iRecordMonth = oDate.getMonth() + 1; // 1-based (Jan=1)
 
-                var iFilterYear = parseInt(sYear);
+                var iFilterYear = parseInt(sYear, 10);
 
-                // YEAR Check
                 if (iRecordYear !== iFilterYear) {
                     return false;
                 }
 
-                // MONTH Check (only if mode is Month)
                 if (sMode === "Month") {
-                    var iFilterMonth = parseInt(sMonth);
-                    // Compare 1-based record month (0+1=1 for Jan) with filter month (1 for Jan)
-                    if ((iRecordMonth + 1) !== iFilterMonth) {
+                    var iFilterMonth = parseInt(sMonth, 10);
+                    if (iRecordMonth !== iFilterMonth) {
                         return false;
                     }
                 }
@@ -244,16 +244,12 @@ sap.ui.define([
                 return true;
             };
 
-            // Apply the filter
-            var aFilters = [];
-            // We must pass the field name to Test against, effectively creating a custom filter on sDateField
             var oDateFilter = new sap.ui.model.Filter({
                 path: sDateField,
                 test: fnDateFilter
             });
-            aFilters.push(oDateFilter);
 
-            oBinding.filter(aFilters);
+            oBinding.filter([oDateFilter]);
         },
 
         _fetchData: function (sFilterString) {

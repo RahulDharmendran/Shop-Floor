@@ -4,8 +4,9 @@ sap.ui.define([
     "sap/ui/model/Filter",      
     "sap/ui/model/FilterOperator", 
     "sap/m/Text",
-    "sap/ui/core/format/DateFormat"
-], function (Controller, UIComponent, Filter, FilterOperator, Text, DateFormat) {
+    "sap/ui/core/format/DateFormat",
+    "sap/ui/model/json/JSONModel"
+], function (Controller, UIComponent, Filter, FilterOperator, Text, DateFormat, JSONModel) {
     "use strict";
 
     var oDateFormat = DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
@@ -102,7 +103,7 @@ sap.ui.define([
             var sEntitySet = oArgs.orderType;
             
             var sOrderType = sEntitySet.includes("PLANNED") ? "PLANNED" : "PRODUCTION";
-            var sEncodedFilter = oArgs.filter;
+            var sEncodedFilter = oArgs.filter; // e.g. "Ernam eq 'TRAINEE'"
             var sFilterString = decodeURIComponent(sEncodedFilter); 
 
             var oTable = this.byId("ordersTable");
@@ -113,46 +114,91 @@ sap.ui.define([
             
             this._updateColumnNames(sOrderType);
 
-            // 1. *** CRITICAL FIX: Get the template from dependents ***
+            // Create or get the template
             var oTemplate = this.byId("orderListItemTemplate").clone(); 
-            // We clone the template to ensure a fresh instance for the binding.
-
-            var aFilters = []; 
             
-            // CONVERT the raw filter string into a sap.ui.model.Filter object and capture userId
+            // Extract User Filter if present
+            var sUserFilterField = null;
+            var sUserFilterValue = null;
+            var sUserFilterOp = null;
+
             if (sFilterString) {
                 var aParts = sFilterString.match(/(\w+)\s(eq|ne|gt|ge|lt|le)\s'([^']+)'/i);
-                
                 if (aParts && aParts.length >= 4) {
-                    var sFieldName = aParts[1]; 
-                    var sOperator = aParts[2].toUpperCase(); 
-                    var sValue = aParts[3]; 
+                    sUserFilterField = aParts[1]; 
+                    sUserFilterOp = aParts[2].toUpperCase(); 
+                    sUserFilterValue = aParts[3]; 
 
-                    this._sCurrentUserId = sValue; 
-
-                    var oMandatoryFilter = new Filter(sFieldName, FilterOperator[sOperator], sValue);
-                    aFilters.push(oMandatoryFilter);
+                    this._sCurrentUserId = sUserFilterValue; 
                 }
             }
+
+            // Using jQuery.ajax to bypass ODataModel's duplicate metadata ID issue
+            var oModel = this.getOwnerComponent().getModel("orderModel");
+            var sServiceUrl = oModel.sServiceUrl;
             
-            // Existing filter logic for distinguishing order types within a single entity set
-            if (sEntitySet.includes("PRODUCTION") || sEntitySet.includes("PROJ")) {
-                 if (sTitle === "Planned Orders List") {
-                    aFilters.push(new Filter("Aurt", FilterOperator.Contains, "PP0")); 
-                } else if (sTitle === "Production Orders List") {
-                    aFilters.push(new Filter("Aurt", FilterOperator.Contains, "PM0")); 
-                }
+            // Ensure trailing slash
+            if (!sServiceUrl.endsWith("/")) {
+                sServiceUrl += "/";
             }
 
-            // --- CRITICAL BINDING ---
-            // Unbind first to clear old binding and template
-            oTable.unbindItems(); 
+            var sUrl = sServiceUrl + sEntitySet + "?$format=json";
 
-            oTable.bindItems({
-                path: "/" + sEntitySet, 
-                model: "orderModel", 
-                template: oTemplate,
-                filters: aFilters
+            var that = this;
+            oTable.setBusy(true);
+
+            $.ajax({
+                url: sUrl,
+                method: "GET",
+                dataType: "json",
+                success: function(data) {
+                    var aResults = (data && data.d && data.d.results) ? data.d.results : [];
+                    
+                    // Client-side filtering
+                    var aFilteredResults = aResults.filter(function(item) {
+                        var bPassType = true;
+                        var bPassUser = true;
+
+                        // Filter by Order Type (PM vs PP)
+                        if (sOrderType === "PLANNED") {
+                            // Expecting PP orders
+                            bPassType = (item.Aurt && item.Aurt.indexOf("PP") !== -1);
+                        } else {
+                            // Expecting PM orders (Production)
+                            bPassType = (item.Aurt && item.Aurt.indexOf("PM") !== -1);
+                        }
+
+                        // Filter by User/Field if provided
+                        if (sUserFilterField && sUserFilterValue) {
+                            var sItemValue = item[sUserFilterField];
+                            if (sUserFilterOp === "EQ") {
+                                bPassUser = (sItemValue === sUserFilterValue);
+                            }
+                            // Add other operators if needed, currently only EQ is common
+                        }
+
+                        return bPassType && bPassUser;
+                    });
+
+                    var oJsonModel = new JSONModel({
+                        results: aFilteredResults
+                    });
+
+                    oTable.setModel(oJsonModel, "jsonOrders");
+                    
+                    oTable.unbindItems();
+                    oTable.bindItems({
+                        path: "jsonOrders>/results",
+                        template: oTemplate
+                    });
+                    
+                    oTable.setBusy(false);
+                },
+                error: function(err) {
+                    oTable.setBusy(false);
+                    console.error("Failed to fetch data via AJAX", err);
+                    // Fallback or error message could go here
+                }
             });
         },
 

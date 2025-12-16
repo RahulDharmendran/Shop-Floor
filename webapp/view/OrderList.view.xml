@@ -13,41 +13,41 @@
         <dependents>
             <ColumnListItem id="orderListItemTemplate" type="Active">
                 <cells>
-                    <Text id="cellOrderNumber" text="{orderModel>OrderNumber}{orderModel>Aufnr}" maxLines="2"/> 
+                    <Text id="cellOrderNumber" text="{jsonOrders>Aufnr}" maxLines="2"/> 
                     
-                    <Text id="cellMaterial" text="{orderModel>MaterialNumber}{orderModel>Matnr}" maxLines="2"/>
+                    <Text id="cellMaterial" text="{jsonOrders>Matnr}" maxLines="2"/>
                     
-                    <Text id="cellOrderType" text="{orderModel>OrderType}{orderModel>Aurt}" maxLines="2"/>
+                    <Text id="cellOrderType" text="{jsonOrders>Aurt}" maxLines="2"/>
                     
-                    <Text id="cellPlant" text="{orderModel>PlanningPlant}{orderModel>Werks}" maxLines="2"/>
+                    <Text id="cellPlant" text="{jsonOrders>Werks}" maxLines="2"/>
                     
-                    <Text id="cellDescription" text="{orderModel>PlanningStatus}{orderModel>Ktext}" maxLines="2"/>
+                    <Text id="cellDescription" text="{jsonOrders>Ktext}" maxLines="2"/>
                     
                     <Text id="cellStartDate" 
-                          text="{path: 'orderModel>StartDate', formatter: '.formatter.date'} {path: 'orderModel>Gstrp', formatter: '.formatter.date'}" 
+                          text="{path: 'jsonOrders>Gstrp', formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
                     <Text id="cellEndDate" 
-                          text="{path: 'orderModel>EndDate', formatter: '.formatter.date'} {path: 'orderModel>Gltrp', formatter: '.formatter.date'}" 
+                          text="{path: 'jsonOrders>Gltrp', formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
-                    <Text id="cellQuantity" text="{orderModel>PlannedQuantity}{orderModel>Gamng}" maxLines="2"/>
+                    <Text id="cellQuantity" text="{jsonOrders>Gamng}" maxLines="2"/>
                     
-                    <Text id="cellUnit" text="{orderModel>Unit}{orderModel>Gmein}" maxLines="2"/>
+                    <Text id="cellUnit" text="{jsonOrders>Gmein}" maxLines="2"/>
                     
-                    <Text id="cellCreator" text="{orderModel>Creator}{orderModel>Ernam}" maxLines="2"/>
+                    <Text id="cellCreator" text="{jsonOrders>Ernam}" maxLines="2"/>
                     
                     <Text id="cellStockCreation" 
-                          text="{orderModel>StockCategory} {path: 'orderModel>Erdat', formatter: '.formatter.date'}" 
+                          text="{path: 'jsonOrders>Erdat', formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
-                    <Text id="cellProdPlant" text="{orderModel>ProductionPlant}{orderModel>Objnr}" maxLines="2"/>
+                    <Text id="cellProdPlant" text="{jsonOrders>Objnr}" maxLines="2"/>
                     
                     <Text id="cellMrpFtrmi" 
-                          text="{orderModel>MrpGroup} {path: 'orderModel>Ftrmi', formatter: '.formatter.date'}" 
+                          text="{path: 'jsonOrders>Ftrmi', formatter: '.formatter.date'}" 
                           maxLines="2"/>
                     
-                    <Text id="cellFtrmp" text="{path: 'orderModel>Ftrmp', formatter: '.formatter.date'}" maxLines="2"/>
+                    <Text id="cellFtrmp" text="{path: 'jsonOrders>Ftrmp', formatter: '.formatter.date'}" maxLines="2"/>
                 </cells>
             </ColumnListItem>
         </dependents>

@@ -40,18 +40,24 @@ sap.ui.define([
                     var oDate = null;
                     var sStrValue = String(sValue);
 
+                    // 1. Handle OData JSON Date: "/Date(1750636800000)/"
                     if (sStrValue.indexOf("Date") !== -1) {
                         var aMatches = sStrValue.match(/-?\d+/);
                         if (aMatches) {
-                            oDate = new Date(parseInt(aMatches[0], 10));
+                            var iTimestamp = parseInt(aMatches[0], 10);
+                            if (!isNaN(iTimestamp)) {
+                                oDate = new Date(iTimestamp);
+                            }
                         }
                     }
+                    // 2. Handle "YYYYMMDD" (8 digits)
                     else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
                         var y = parseInt(sStrValue.substring(0, 4), 10);
-                        var m = parseInt(sStrValue.substring(4, 6), 10) - 1;
+                        var m = parseInt(sStrValue.substring(4, 6), 10) - 1; // Month is 0-indexed
                         var d = parseInt(sStrValue.substring(6, 8), 10);
                         oDate = new Date(y, m, d);
                     }
+                    // 3. Handle Standard Date String
                     else {
                         oDate = new Date(sStrValue);
                     }
@@ -60,6 +66,7 @@ sap.ui.define([
                         return oDateFormat.format(oDate);
                     }
 
+                    // If parsing failed (e.g. Description text), return original value
                     return sValue;
 
                 } catch (e) {
@@ -188,6 +195,7 @@ sap.ui.define([
                 var oDate = null;
                 var sStrValue = String(sValue);
 
+                // 1. Handle OData JSON Date: "/Date(1750636800000)/"
                 if (sStrValue.indexOf("Date") !== -1) {
                     var aMatches = sStrValue.match(/-?\d+/);
                     if (aMatches) {
@@ -197,12 +205,14 @@ sap.ui.define([
                         }
                     }
                 }
+                // 2. Handle "YYYYMMDD" (8 digits)
                 else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
                     var y = parseInt(sStrValue.substring(0, 4), 10);
-                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1;
+                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1; // Month is 0-indexed
                     var d = parseInt(sStrValue.substring(6, 8), 10);
                     oDate = new Date(y, m, d);
                 }
+                // 3. Handle Standard Date String
                 else {
                     oDate = new Date(sStrValue);
                 }
@@ -212,6 +222,8 @@ sap.ui.define([
                 }
 
                 var iRecordYear = oDate.getFullYear();
+                var iRecordMonth = oDate.getMonth() + 1; // 1-based (Jan=1)
+
                 var iFilterYear = parseInt(sYear, 10);
 
                 if (iRecordYear !== iFilterYear) {
@@ -219,7 +231,6 @@ sap.ui.define([
                 }
 
                 if (sMode === "Month") {
-                    var iRecordMonth = oDate.getMonth() + 1;
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {
                         return false;
@@ -241,7 +252,6 @@ sap.ui.define([
             var oTable = this.byId("ordersTable");
             oTable.setBusy(true);
 
-            // Fetch ALL data for the entity set (filtered only by User ID if needed)
             var sUrl = "/sap/opu/odata/sap/ZRD_SF_PROJ_SRV/" + this._sEntitySet + "?$format=json";
 
             if (sFilterString) {
@@ -254,17 +264,22 @@ sap.ui.define([
                 type: "GET",
                 dataType: "json",
                 success: function (oData) {
-                    // Use a large size limit to ensure all data is client-side accessible
                     var oViewModel = new JSONModel(oData);
                     oViewModel.setSizeLimit(5000);
                     that.getView().setModel(oViewModel, "jsonOrders");
 
-                    oTable.setBusy(false);
+                    // Explicitly bind items if not bound in XML
+                    if (!oTable.getBindingInfo("items")) {
+                        var oTemplate = that.byId("orderListItemTemplate");
+                        if (oTemplate) {
+                            oTable.bindItems({
+                                path: "jsonOrders>/d/results",
+                                template: oTemplate
+                            });
+                        }
+                    }
 
-                    // Force an initial filter application if we want to default to current month/year
-                    // But if user says "all data gone", maybe we should NOT filter initially?
-                    // Let's NOT apply the filter automatically on load, just show the data.
-                    // The user can click "Go" to filter.
+                    oTable.setBusy(false);
                 },
                 error: function (oError) {
                     oTable.setBusy(false);

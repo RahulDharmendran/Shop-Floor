@@ -185,6 +185,8 @@ sap.ui.define([
                 return;
             }
 
+            var sDateField = "_FilterDate";
+
             var fnDateFilter = function (sValue) {
                 if (sValue == null || sValue === "" || sValue === "NA" || sValue === "0000-00-00") {
                     return false;
@@ -193,7 +195,6 @@ sap.ui.define([
                 var oDate = null;
                 var sStrValue = String(sValue);
 
-                // 1. Handle OData JSON Date: "/Date(1750636800000)/"
                 if (sStrValue.indexOf("Date") !== -1) {
                     var aMatches = sStrValue.match(/-?\d+/);
                     if (aMatches) {
@@ -203,14 +204,12 @@ sap.ui.define([
                         }
                     }
                 }
-                // 2. Handle "YYYYMMDD" (8 digits)
                 else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
                     var y = parseInt(sStrValue.substring(0, 4), 10);
-                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1; // Month is 0-indexed
+                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1;
                     var d = parseInt(sStrValue.substring(6, 8), 10);
                     oDate = new Date(y, m, d);
                 }
-                // 3. Handle Standard Date String
                 else {
                     oDate = new Date(sStrValue);
                 }
@@ -227,7 +226,7 @@ sap.ui.define([
                 }
 
                 if (sMode === "Month") {
-                    var iRecordMonth = oDate.getMonth() + 1; // 1-based
+                    var iRecordMonth = oDate.getMonth() + 1;
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {
                         return false;
@@ -237,22 +236,12 @@ sap.ui.define([
                 return true;
             };
 
-            // Use Combined Filter to check BOTH possible date fields (StartDate OR Gstrp)
-            var oStartDateFilter = new Filter({
-                path: "StartDate",
-                test: fnDateFilter
-            });
-            var oGstrpFilter = new Filter({
-                path: "Gstrp",
+            var oDateFilter = new sap.ui.model.Filter({
+                path: sDateField,
                 test: fnDateFilter
             });
 
-            var oCombinedFilter = new Filter({
-                filters: [oStartDateFilter, oGstrpFilter],
-                and: false
-            });
-
-            oBinding.filter(oCombinedFilter);
+            oBinding.filter([oDateFilter]);
         },
 
         _fetchData: function (sFilterString) {
@@ -271,11 +260,17 @@ sap.ui.define([
                 type: "GET",
                 dataType: "json",
                 success: function (oData) {
+                    // Pre-process Data: Create a normalized date field
+                    if (oData && oData.d && oData.d.results) {
+                        oData.d.results.forEach(function (oItem) {
+                            oItem._FilterDate = oItem.StartDate || oItem.Gstrp || oItem.PlanningStatus;
+                        });
+                    }
+
                     var oViewModel = new JSONModel(oData);
                     oViewModel.setSizeLimit(5000);
                     that.getView().setModel(oViewModel, "jsonOrders");
 
-                    // Explicitly bind items if not bound in XML
                     if (!oTable.getBindingInfo("items")) {
                         var oTemplate = that.byId("orderListItemTemplate");
                         if (oTemplate) {

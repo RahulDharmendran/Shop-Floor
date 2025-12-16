@@ -204,7 +204,6 @@ sap.ui.define([
                 var sStrValue = String(sValue);
 
                 // 1. Handle OData JSON Date: "/Date(1750636800000)/" or similar
-                // Relaxed check: Look for "Date" and any sequence of digits
                 if (sStrValue.indexOf("Date") !== -1) {
                     var aMatches = sStrValue.match(/-?\d+/);
                     if (aMatches) {
@@ -216,33 +215,29 @@ sap.ui.define([
                 }
                 // 2. Handle "YYYYMMDD" (8 digits)
                 else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
-                    var y = sStrValue.substring(0, 4);
-                    var m = sStrValue.substring(4, 6);
-                    var d = sStrValue.substring(6, 8);
-                    oDate = new Date(y + "-" + m + "-" + d);
+                    var y = parseInt(sStrValue.substring(0, 4), 10);
+                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1; // Month is 0-indexed
+                    var d = parseInt(sStrValue.substring(6, 8), 10);
+                    oDate = new Date(y, m, d);
                 }
-                // 3. Handle Standard Date String (YYYY-MM-DD or other parsable formats)
+                // 3. Handle Standard Date String (YYYY-MM-DD, etc)
                 else {
                     oDate = new Date(sStrValue);
                 }
 
-                // Validity Check
                 if (!oDate || isNaN(oDate.getTime())) {
                     return false;
                 }
 
-                // Extract Year and Month (1-based)
                 var iRecordYear = oDate.getFullYear();
-                var iRecordMonth = oDate.getMonth() + 1;
+                var iRecordMonth = oDate.getMonth() + 1; // 1-based (Jan=1)
 
                 var iFilterYear = parseInt(sYear, 10);
 
-                // Year Check
                 if (iRecordYear !== iFilterYear) {
                     return false;
                 }
 
-                // Month Check (only if mode is Month)
                 if (sMode === "Month") {
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {

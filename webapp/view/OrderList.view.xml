@@ -1,6 +1,7 @@
 <mvc:View
     controllerName="shopfloor.controller.OrderList"
     xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
     xmlns="sap.m">
     
     <Page

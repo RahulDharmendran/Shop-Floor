@@ -5,41 +5,45 @@
     xmlns:mc="sap.suite.ui.microchart">
     <Page id="dashboardPage" title="{i18n>dashboardPageTitle}" showNavButton="true" navButtonPress="onNavBack" class="myDashboardBackground">
         <content>
-            <l:VerticalLayout id="dashboardLayout" class="sapUiContentPadding" width="100%">
-                <Title id="overviewTitle" text="Overview" titleStyle="H2" class="sapUiSmallMarginBegin"/>
+            <VBox id="dashboardLayout" class="sapUiContentPadding" width="100%" alignItems="Center">
+                <Title id="overviewTitle" text="Overview" titleStyle="H2" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" width="100%"/>
                 
-                <l:HorizontalLayout id="tileContainer" allowWrapping="true">
-                    
-                    <GenericTile id="tilePlannedMonth" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tilePlannedMonthHeader}" subheader="{i18n>tilePlannedMonthSubheader}" press="onPressPlannedMonth">
-                        <TileContent id="contentPlannedMonth">
-                            <ImageContent id="imgPlannedMonth" src="sap-icon://calendar-month" />
-                        </TileContent>
-                    </GenericTile>
+                <VBox id="gridContainer" alignItems="Center">
+                    <!-- Row 1 -->
+                    <HBox id="row1" wrap="Wrap" justifyContent="Center">
+                        <GenericTile id="tilePlannedMonth" class="sapUiTinyMargin" 
+                            header="{i18n>tilePlannedMonthHeader}" subheader="{i18n>tilePlannedMonthSubheader}" press="onPressPlannedMonth">
+                            <TileContent id="contentPlannedMonth">
+                                <ImageContent id="imgPlannedMonth" src="sap-icon://calendar" />
+                            </TileContent>
+                        </GenericTile>
 
-                    <GenericTile id="tilePlannedYear" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tilePlannedYearHeader}" subheader="{i18n>tilePlannedYearSubheader}" press="onPressPlannedYear">
-                        <TileContent id="contentPlannedYear">
-                            <ImageContent id="imgPlannedYear" src="sap-icon://date-time" />
-                        </TileContent>
-                    </GenericTile>
-                    
-                    <GenericTile id="tileProdMonth" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tileProdMonthHeader}" subheader="{i18n>tileProdMonthSubheader}" press="onPressProdMonth">
-                        <TileContent id="contentProdMonth">
-                            <ImageContent id="imgProdMonth" src="sap-icon://factory" />
-                        </TileContent>
-                    </GenericTile>
+                        <GenericTile id="tilePlannedYear" class="sapUiTinyMargin" 
+                            header="{i18n>tilePlannedYearHeader}" subheader="{i18n>tilePlannedYearSubheader}" press="onPressPlannedYear">
+                            <TileContent id="contentPlannedYear">
+                                <ImageContent id="imgPlannedYear" src="sap-icon://date-time" />
+                            </TileContent>
+                        </GenericTile>
+                    </HBox>
 
-                    <GenericTile id="tileProdYear" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tileProdYearHeader}" subheader="{i18n>tileProdYearSubheader}" press="onPressProdYear">
-                        <TileContent id="contentProdYear">
-                            <ImageContent id="imgProdYear" src="sap-icon://production" />
-                        </TileContent>
-                    </GenericTile>
-                
-                </l:HorizontalLayout>
-            </l:VerticalLayout>
+                    <!-- Row 2 -->
+                    <HBox id="row2" wrap="Wrap" justifyContent="Center">
+                        <GenericTile id="tileProdMonth" class="sapUiTinyMargin" 
+                            header="{i18n>tileProdMonthHeader}" subheader="{i18n>tileProdMonthSubheader}" press="onPressProdMonth">
+                            <TileContent id="contentProdMonth">
+                                <ImageContent id="imgProdMonth" src="sap-icon://factory" />
+                            </TileContent>
+                        </GenericTile>
+
+                        <GenericTile id="tileProdYear" class="sapUiTinyMargin" 
+                            header="{i18n>tileProdYearHeader}" subheader="{i18n>tileProdYearSubheader}" press="onPressProdYear">
+                            <TileContent id="contentProdYear">
+                                <ImageContent id="imgProdYear" src="sap-icon://product" />
+                            </TileContent>
+                        </GenericTile>
+                    </HBox>
+                </VBox>
+            </VBox>
         </content>
     </Page>
 </mvc:View>

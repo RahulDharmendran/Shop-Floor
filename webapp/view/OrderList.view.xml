@@ -19,7 +19,7 @@
                     
                     <Text id="cellPlant" text="{parts: [{path: 'jsonOrders>Werks'}, {path: 'jsonOrders>PlanningPlant'}], formatter: '.formatter.fallback'}" maxLines="2"/>
                     
-                    <Text id="cellDescription" text="{parts: [{path: 'jsonOrders>Ktext'}, {path: 'jsonOrders>PlanningStatus'}], formatter: '.formatter.fallback'}" maxLines="2"/>
+                    <Text id="cellDescription" text="{parts: [{path: 'jsonOrders>Ktext'}, {path: 'jsonOrders>PlanningStatus'}], formatter: '.formatter.date'}" maxLines="2"/>
                     
                     <Text id="cellStartDate" 
                           text="{parts: [{path: 'jsonOrders>Gstrp'}, {path: 'jsonOrders>StartDate'}], formatter: '.formatter.date'}" 
@@ -59,9 +59,9 @@
                     <Column id="colOrderNumber" width="7rem"><Text id="txtOrderNumber" text="{i18n>colOrderNumber}"/></Column>
                     <Column id="colOrderType" width="4rem"><Text id="txtOrderType" text="{i18n>colOrderType}"/></Column>
                     <Column id="colPlant" width="5rem"><Text id="txtPlant" text="{i18n>colPlant}"/></Column>
-                    <Column id="colDescription" width="auto"><Text id="txtDescription" text="{i18n>colDescriptionStatus}"/></Column>
-                    <Column id="colStartDate" hAlign="End" width="7rem"><Text id="txtStartDate" text="{i18n>colStartDate}"/></Column>
-                    <Column id="colEndDate" hAlign="End" width="7rem"><Text id="txtEndDate" text="{i18n>colEndDate}"/></Column>
+                    <Column id="colDescription" width="auto"><Text id="txtDescription" text="Desc / Created"/></Column>
+                    <Column id="colStartDate" hAlign="End" width="7rem"><Text id="txtStartDate" text="Impl Start"/></Column>
+                    <Column id="colEndDate" hAlign="End" width="7rem"><Text id="txtEndDate" text="Impl End"/></Column>
                     <Column id="colQuantity" hAlign="End" width="5rem"><Text id="txtQuantity" text="{i18n>colQuantity}"/></Column>
                     <Column id="colUnit" width="3rem"><Text id="txtUnit" text="{i18n>colUnit}"/></Column>
                     <Column id="colCreator" width="6rem"><Text id="txtCreator" text="{i18n>colCreator}"/></Column>

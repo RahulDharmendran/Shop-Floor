@@ -212,8 +212,6 @@ sap.ui.define([
                 }
 
                 var iRecordYear = oDate.getFullYear();
-                var iRecordMonth = oDate.getMonth() + 1;
-
                 var iFilterYear = parseInt(sYear, 10);
 
                 if (iRecordYear !== iFilterYear) {
@@ -221,6 +219,7 @@ sap.ui.define([
                 }
 
                 if (sMode === "Month") {
+                    var iRecordMonth = oDate.getMonth() + 1;
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {
                         return false;
@@ -242,6 +241,7 @@ sap.ui.define([
             var oTable = this.byId("ordersTable");
             oTable.setBusy(true);
 
+            // Fetch ALL data for the entity set (filtered only by User ID if needed)
             var sUrl = "/sap/opu/odata/sap/ZRD_SF_PROJ_SRV/" + this._sEntitySet + "?$format=json";
 
             if (sFilterString) {
@@ -254,9 +254,17 @@ sap.ui.define([
                 type: "GET",
                 dataType: "json",
                 success: function (oData) {
+                    // Use a large size limit to ensure all data is client-side accessible
                     var oViewModel = new JSONModel(oData);
+                    oViewModel.setSizeLimit(5000);
                     that.getView().setModel(oViewModel, "jsonOrders");
+
                     oTable.setBusy(false);
+
+                    // Force an initial filter application if we want to default to current month/year
+                    // But if user says "all data gone", maybe we should NOT filter initially?
+                    // Let's NOT apply the filter automatically on load, just show the data.
+                    // The user can click "Go" to filter.
                 },
                 error: function (oError) {
                     oTable.setBusy(false);

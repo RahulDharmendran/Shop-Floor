@@ -185,8 +185,6 @@ sap.ui.define([
                 return;
             }
 
-            var sDateField = (this._sOrderType === "PLANNED") ? "StartDate" : "Gstrp";
-
             var fnDateFilter = function (sValue) {
                 if (sValue == null || sValue === "" || sValue === "NA" || sValue === "0000-00-00") {
                     return false;
@@ -222,8 +220,6 @@ sap.ui.define([
                 }
 
                 var iRecordYear = oDate.getFullYear();
-                var iRecordMonth = oDate.getMonth() + 1; // 1-based (Jan=1)
-
                 var iFilterYear = parseInt(sYear, 10);
 
                 if (iRecordYear !== iFilterYear) {
@@ -231,6 +227,7 @@ sap.ui.define([
                 }
 
                 if (sMode === "Month") {
+                    var iRecordMonth = oDate.getMonth() + 1; // 1-based
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {
                         return false;
@@ -240,12 +237,22 @@ sap.ui.define([
                 return true;
             };
 
-            var oDateFilter = new sap.ui.model.Filter({
-                path: sDateField,
+            // Use Combined Filter to check BOTH possible date fields (StartDate OR Gstrp)
+            var oStartDateFilter = new Filter({
+                path: "StartDate",
+                test: fnDateFilter
+            });
+            var oGstrpFilter = new Filter({
+                path: "Gstrp",
                 test: fnDateFilter
             });
 
-            oBinding.filter([oDateFilter]);
+            var oCombinedFilter = new Filter({
+                filters: [oStartDateFilter, oGstrpFilter],
+                and: false
+            });
+
+            oBinding.filter(oCombinedFilter);
         },
 
         _fetchData: function (sFilterString) {

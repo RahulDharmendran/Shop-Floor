@@ -10,33 +10,91 @@
                 
                 <l:HorizontalLayout id="tileContainer" allowWrapping="true">
                     
-                    <GenericTile id="tilePlannedMonth" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tilePlannedMonthHeader}" subheader="{i18n>tilePlannedMonthSubheader}" press="onPressPlannedMonth">
-                        <TileContent id="contentPlannedMonth">
-                            <ImageContent id="imgPlannedMonth" src="sap-icon://calendar-month" />
-                        </TileContent>
-                    </GenericTile>
+                    <!-- Planned Month Tile and Filter -->
+                    <VBox class="sapUiTinyMarginBegin sapUiTinyMarginTop">
+                        <GenericTile id="tilePlannedMonth" 
+                            header="{i18n>tilePlannedMonthHeader}" subheader="{i18n>tilePlannedMonthSubheader}" press="onPressPlannedMonth">
+                            <TileContent id="contentPlannedMonth">
+                                <ImageContent id="imgPlannedMonth" src="sap-icon://calendar-month" />
+                            </TileContent>
+                        </GenericTile>
+                        <Select id="slPlannedMonth" width="100%">
+                            <items>
+                                <core:Item key="00" text="January"/>
+                                <core:Item key="01" text="February"/>
+                                <core:Item key="02" text="March"/>
+                                <core:Item key="03" text="April"/>
+                                <core:Item key="04" text="May"/>
+                                <core:Item key="05" text="June"/>
+                                <core:Item key="06" text="July"/>
+                                <core:Item key="07" text="August"/>
+                                <core:Item key="08" text="September"/>
+                                <core:Item key="09" text="October"/>
+                                <core:Item key="10" text="November"/>
+                                <core:Item key="11" text="December"/>
+                            </items>
+                        </Select>
+                    </VBox>
 
-                    <GenericTile id="tilePlannedYear" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tilePlannedYearHeader}" subheader="{i18n>tilePlannedYearSubheader}" press="onPressPlannedYear">
-                        <TileContent id="contentPlannedYear">
-                            <ImageContent id="imgPlannedYear" src="sap-icon://date-time" />
-                        </TileContent>
-                    </GenericTile>
+                    <!-- Planned Year Tile and Filter -->
+                    <VBox class="sapUiTinyMarginBegin sapUiTinyMarginTop">
+                        <GenericTile id="tilePlannedYear" 
+                            header="{i18n>tilePlannedYearHeader}" subheader="{i18n>tilePlannedYearSubheader}" press="onPressPlannedYear">
+                            <TileContent id="contentPlannedYear">
+                                <ImageContent id="imgPlannedYear" src="sap-icon://date-time" />
+                            </TileContent>
+                        </GenericTile>
+                        <Select id="slPlannedYear" width="100%">
+                            <items>
+                                <core:Item key="2024" text="2024"/>
+                                <core:Item key="2025" text="2025"/>
+                                <core:Item key="2026" text="2026"/>
+                            </items>
+                        </Select>
+                    </VBox>
                     
-                    <GenericTile id="tileProdMonth" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tileProdMonthHeader}" subheader="{i18n>tileProdMonthSubheader}" press="onPressProdMonth">
-                        <TileContent id="contentProdMonth">
-                            <ImageContent id="imgProdMonth" src="sap-icon://factory" />
-                        </TileContent>
-                    </GenericTile>
+                    <!-- Production Month Tile and Filter -->
+                    <VBox class="sapUiTinyMarginBegin sapUiTinyMarginTop">
+                        <GenericTile id="tileProdMonth" 
+                            header="{i18n>tileProdMonthHeader}" subheader="{i18n>tileProdMonthSubheader}" press="onPressProdMonth">
+                            <TileContent id="contentProdMonth">
+                                <ImageContent id="imgProdMonth" src="sap-icon://factory" />
+                            </TileContent>
+                        </GenericTile>
+                        <Select id="slProdMonth" width="100%">
+                            <items>
+                                <core:Item key="00" text="January"/>
+                                <core:Item key="01" text="February"/>
+                                <core:Item key="02" text="March"/>
+                                <core:Item key="03" text="April"/>
+                                <core:Item key="04" text="May"/>
+                                <core:Item key="05" text="June"/>
+                                <core:Item key="06" text="July"/>
+                                <core:Item key="07" text="August"/>
+                                <core:Item key="08" text="September"/>
+                                <core:Item key="09" text="October"/>
+                                <core:Item key="10" text="November"/>
+                                <core:Item key="11" text="December"/>
+                            </items>
+                        </Select>
+                    </VBox>
 
-                    <GenericTile id="tileProdYear" class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                        header="{i18n>tileProdYearHeader}" subheader="{i18n>tileProdYearSubheader}" press="onPressProdYear">
-                        <TileContent id="contentProdYear">
-                            <ImageContent id="imgProdYear" src="sap-icon://production" />
-                        </TileContent>
-                    </GenericTile>
+                    <!-- Production Year Tile and Filter -->
+                    <VBox class="sapUiTinyMarginBegin sapUiTinyMarginTop">
+                        <GenericTile id="tileProdYear" 
+                            header="{i18n>tileProdYearHeader}" subheader="{i18n>tileProdYearSubheader}" press="onPressProdYear">
+                            <TileContent id="contentProdYear">
+                                <ImageContent id="imgProdYear" src="sap-icon://production" />
+                            </TileContent>
+                        </GenericTile>
+                         <Select id="slProdYear" width="100%">
+                            <items>
+                                <core:Item key="2024" text="2024"/>
+                                <core:Item key="2025" text="2025"/>
+                                <core:Item key="2026" text="2026"/>
+                            </items>
+                        </Select>
+                    </VBox>
                 
                 </l:HorizontalLayout>
             </l:VerticalLayout>

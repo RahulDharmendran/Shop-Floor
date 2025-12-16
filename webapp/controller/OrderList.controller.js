@@ -168,42 +168,90 @@ sap.ui.define([
 
             this._updateColumnNames(sOrderType);
 
-            // Trigger initial search - USER ID FILTER ONLY (As requested: "User ID as usual")
-            // We do NOT apply the date filter automatically. The user must click 'Go' to apply date filters.
+            // Trigger initial search - Fetch ALL data for the user
             this._fetchData(sFilterString);
         },
 
         onFilterSearch: function () {
             var sYear = this.byId("filterYear").getSelectedKey();
             var sMonth = this.byId("filterMonth").getSelectedKey();
-            var sMode = this.getView().getModel("viewModel").getProperty("/mode");
+            var sMode = this.getView().getModel("viewModel").getProperty("/mode"); // Month or Year
 
-            var iYear = parseInt(sYear);
-            var sStartDate, sEndDate;
-
-            if (sMode === "Month") {
-                var iMonth = parseInt(sMonth);
-                // Create UTC dates to avoid timezone shifts
-                var oStartDate = new Date(Date.UTC(iYear, iMonth, 1));
-                var oEndDate = new Date(Date.UTC(iYear, iMonth + 1, 0, 23, 59, 59));
-
-                sStartDate = oStartDate.toISOString().split('.')[0];
-                sEndDate = oEndDate.toISOString().split('.')[0];
-            } else {
-                // Year Mode
-                sStartDate = iYear + "-01-01T00:00:00";
-                sEndDate = iYear + "-12-31T23:59:59";
+            var oTable = this.byId("ordersTable");
+            var oBinding = oTable.getBinding("items");
+            if (!oBinding) {
+                return;
             }
 
-            // Determine Date Field
             var sDateField = (this._sOrderType === "PLANNED") ? "StartDate" : "Gstrp";
 
-            var sDateFilter = sDateField + " ge datetime'" + sStartDate + "' and " + sDateField + " le datetime'" + sEndDate + "'";
+            // Client-Side Filter Function
+            // Extract YYYY and MM from the record's date field and compare
+            var fnDateFilter = function (sValue) {
+                if (!sValue || sValue === "0000-00-00") {
+                    return false;
+                }
 
-            // Combine user filter with date filter
-            var sFullFilter = this._sUserFilterString ? this._sUserFilterString + " and " + sDateFilter : sDateFilter;
+                var oDate = null;
 
-            this._fetchData(sFullFilter);
+                // Handle "/Date(123456)/" format
+                if (typeof sValue === 'string' && sValue.indexOf("/Date(") !== -1) {
+                    var sTimestamp = sValue.replace(/\/Date\((-?\d+)\)\//, '$1');
+                    oDate = new Date(parseInt(sTimestamp, 10));
+                }
+                // Handle "YYYY-MM-DD" or "YYYYMMDD" string
+                else if (typeof sValue === 'string') {
+                    if (sValue.length === 8 && sValue.match(/^\d{8}$/)) {
+                        // 20250612 -> 2025-06-12
+                        var y = sValue.substring(0, 4);
+                        var m = sValue.substring(4, 6);
+                        var d = sValue.substring(6, 8);
+                        oDate = new Date(y + "-" + m + "-" + d);
+                    } else {
+                        // Assume already YYYY-MM-DD
+                        oDate = new Date(sValue);
+                    }
+                }
+                // Handle Date Object
+                else if (sValue instanceof Date) {
+                    oDate = sValue;
+                }
+
+                if (!oDate || isNaN(oDate.getTime())) {
+                    return false; // Invalid date
+                }
+
+                var iRecordYear = oDate.getFullYear();
+                var iRecordMonth = oDate.getMonth(); // 0-11
+
+                var iFilterYear = parseInt(sYear);
+
+                // YEAR Check
+                if (iRecordYear !== iFilterYear) {
+                    return false;
+                }
+
+                // MONTH Check (only if mode is Month)
+                if (sMode === "Month") {
+                    var iFilterMonth = parseInt(sMonth);
+                    if (iRecordMonth !== iFilterMonth) {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            // Apply the filter
+            var aFilters = [];
+            // We must pass the field name to Test against, effectively creating a custom filter on sDateField
+            var oDateFilter = new sap.ui.model.Filter({
+                path: sDateField,
+                test: fnDateFilter
+            });
+            aFilters.push(oDateFilter);
+
+            oBinding.filter(aFilters);
         },
 
         _fetchData: function (sFilterString) {

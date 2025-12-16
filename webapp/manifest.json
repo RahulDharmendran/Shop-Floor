@@ -62,7 +62,7 @@
           "bundleName": "shopfloor.i18n.i18n"
         }
       },
-      "orderModel": {  
+      "orderModel": {
         "dataSource": "mainService",
         "preload": true,
         "settings": {}
@@ -103,7 +103,7 @@
         },
         {
           "name": "OrderList",
-          "pattern": "orders/{orderType}/{filter}",
+          "pattern": "orders/{orderType}/{mode}/{filter}",
           "target": [
             "TargetOrderList"
           ]
@@ -113,17 +113,17 @@
         "TargetLogin": {
           "id": "Login",
           "name": "Login",
-          "viewName": "Login" 
+          "viewName": "Login"
         },
         "TargetDashboard": {
           "id": "Dashboard",
           "name": "Dashboard",
-          "viewName": "Dashboard" 
+          "viewName": "Dashboard"
         },
         "TargetOrderList": {
           "id": "OrderList",
           "name": "OrderList",
-          "viewName": "OrderList", 
+          "viewName": "OrderList",
           "viewPath": "shopfloor.view"
         }
       }

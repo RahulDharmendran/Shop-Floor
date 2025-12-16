@@ -28,40 +28,18 @@ sap.ui.define([
             }
         },
 
-        // Helper to build date filter string
-        _buildDateFilter: function (sDateField, sYear, sMonth) {
-            // Assume sYear is always available or default to current year
-            var iYear = parseInt(sYear) || new Date().getFullYear();
+        // Helper to navigate to OrderList with Mode (Month/Year)
+        _navigateToOrderList: function (sEntitySet, sCreatorField, sMode) {
 
-            var sStartDate, sEndDate;
-
-            if (sMonth !== null && sMonth !== undefined) {
-                // Month Filter
-                var iMonth = parseInt(sMonth);
-                var oStartDate = new Date(Date.UTC(iYear, iMonth, 1));
-                var oEndDate = new Date(Date.UTC(iYear, iMonth + 1, 0, 23, 59, 59));
-
-                sStartDate = oStartDate.toISOString().split('.')[0]; // 2025-06-01T00:00:00
-                sEndDate = oEndDate.toISOString().split('.')[0];
-            } else {
-                // Year Filter
-                sStartDate = iYear + "-01-01T00:00:00";
-                sEndDate = iYear + "-12-31T23:59:59";
-            }
-
-            // OData DateTime format: datetime'2025-06-01T00:00:00'
-            return " and " + sDateField + " ge datetime'" + sStartDate + "' and " + sDateField + " le datetime'" + sEndDate + "'";
-        },
-
-        // Generic function to navigate and pass filter parameters (Simplified)
-        _navigateToOrderList: function (sEntitySet, sFilter) {
-
-            MessageToast.show("Applying Filter: " + sFilter);
+            // Construct a basic filter for the user ID
+            // The OrderList controller will handle the rest based on 'mode'
+            var sUserFilter = sCreatorField + " eq '" + (this._sLoggedInUser || "") + "'";
 
             var oRouter = UIComponent.getRouterFor(this);
             oRouter.navTo("OrderList", {
                 orderType: sEntitySet,
-                filter: encodeURIComponent(sFilter)
+                mode: sMode, // Pass the mode (Month or Year)
+                filter: encodeURIComponent(sUserFilter)
             });
         },
 
@@ -72,51 +50,22 @@ sap.ui.define([
             oRouter.navTo("RouteLogin");
         },
 
-        // Planned uses 'Creator'
+        // Planned Orders
         onPressPlannedMonth: function () {
-            var sMonth = this.byId("slPlannedMonth").getSelectedKey();
-            var sYear = this.byId("slPlannedYear").getSelectedKey();
-
-            var sDateFilter = this._buildDateFilter("StartDate", sYear, sMonth);
-
-            // Prepend User Filter (Essential for OrderList controller logic)
-            var sFullFilter = "Creator eq '" + (this._sLoggedInUser || "") + "'" + sDateFilter;
-
-            this._navigateToOrderList("ZRD_SF_PLANNEDSet", sFullFilter);
+            this._navigateToOrderList("ZRD_SF_PLANNEDSet", "Creator", "Month");
         },
 
         onPressPlannedYear: function () {
-            var sYear = this.byId("slPlannedYear").getSelectedKey();
-
-            var sDateFilter = this._buildDateFilter("StartDate", sYear, null); // Pass null for month to filter by entire year
-
-            var sFullFilter = "Creator eq '" + (this._sLoggedInUser || "") + "'" + sDateFilter;
-
-            this._navigateToOrderList("ZRD_SF_PLANNEDSet", sFullFilter);
+            this._navigateToOrderList("ZRD_SF_PLANNEDSet", "Creator", "Year");
         },
 
-        // Production uses 'Ernam'
+        // Production Orders
         onPressProdMonth: function () {
-            var sMonth = this.byId("slProdMonth").getSelectedKey();
-            var sYear = this.byId("slProdYear").getSelectedKey();
-
-            // Production uses Gstrp
-            var sDateFilter = this._buildDateFilter("Gstrp", sYear, sMonth);
-
-            var sFullFilter = "Ernam eq '" + (this._sLoggedInUser || "") + "'" + sDateFilter;
-
-            this._navigateToOrderList("ZRD_SF_PRODUCTIONSet", sFullFilter);
+            this._navigateToOrderList("ZRD_SF_PRODUCTIONSet", "Ernam", "Month");
         },
 
-        // Production uses 'Ernam'
         onPressProdYear: function () {
-            var sYear = this.byId("slProdYear").getSelectedKey();
-
-            var sDateFilter = this._buildDateFilter("Gstrp", sYear, null);
-
-            var sFullFilter = "Ernam eq '" + (this._sLoggedInUser || "") + "'" + sDateFilter;
-
-            this._navigateToOrderList("ZRD_SF_PRODUCTIONSet", sFullFilter);
+            this._navigateToOrderList("ZRD_SF_PRODUCTIONSet", "Ernam", "Year");
         }
     });
 });

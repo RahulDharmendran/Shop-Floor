@@ -124,8 +124,36 @@ sap.ui.define([
             var sEntitySet = oArgs.orderType;
 
             var sOrderType = sEntitySet.includes("PLANNED") ? "PLANNED" : "PRODUCTION";
-            var sEncodedFilter = oArgs.filter; // e.g. "Ernam eq 'TRAINEE'"
+
+            // Capture the Mode (Month/Year)
+            var sMode = oArgs.mode || "Year"; // Default to Year if missing
+
+            // Set View Model for UI Visibility
+            var oViewModel = new JSONModel({
+                mode: sMode
+            });
+            this.getView().setModel(oViewModel, "viewModel");
+
+            // Set Default Select Values
+            var dNow = new Date();
+            this.byId("filterYear").setSelectedKey(dNow.getFullYear().toString());
+            this.byId("filterMonth").setSelectedKey(dNow.getMonth().toString().padStart(2, '0')); // 0-indexed to 00-11
+
+            var sEncodedFilter = oArgs.filter; // e.g. "Creator eq 'TRAINEE'"
             var sFilterString = decodeURIComponent(sEncodedFilter);
+
+            // Store these for the generic search function
+            this._sEntitySet = sEntitySet;
+            this._sUserFilterString = sFilterString;
+            this._sOrderType = sOrderType;
+
+            // Extract User Filter if present for navBack
+            if (sFilterString) {
+                var aParts = sFilterString.match(/(\w+)\s(eq|ne|gt|ge|lt|le)\s'([^']+)'/i);
+                if (aParts && aParts.length >= 4) {
+                    this._sCurrentUserId = aParts[3];
+                }
+            }
 
             var oTable = this.byId("ordersTable");
             var oPage = this.byId("orderListPage");
@@ -135,24 +163,46 @@ sap.ui.define([
 
             this._updateColumnNames(sOrderType);
 
-            // Create or get the template
-            var oTemplate = this.byId("orderListItemTemplate").clone();
+            // Trigger initial search
+            this.onFilterSearch();
+        },
 
-            // Extract User Filter if present
-            var sUserFilterField = null;
-            var sUserFilterValue = null;
-            var sUserFilterOp = null;
+        onFilterSearch: function () {
+            var sYear = this.byId("filterYear").getSelectedKey();
+            var sMonth = this.byId("filterMonth").getSelectedKey();
+            var sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
-            if (sFilterString) {
-                var aParts = sFilterString.match(/(\w+)\s(eq|ne|gt|ge|lt|le)\s'([^']+)'/i);
-                if (aParts && aParts.length >= 4) {
-                    sUserFilterField = aParts[1];
-                    sUserFilterOp = aParts[2].toUpperCase();
-                    sUserFilterValue = aParts[3];
+            var iYear = parseInt(sYear);
+            var sStartDate, sEndDate;
 
-                    this._sCurrentUserId = sUserFilterValue;
-                }
+            if (sMode === "Month") {
+                var iMonth = parseInt(sMonth);
+                // Create UTC dates to avoid timezone shifts
+                var oStartDate = new Date(Date.UTC(iYear, iMonth, 1));
+                var oEndDate = new Date(Date.UTC(iYear, iMonth + 1, 0, 23, 59, 59));
+
+                sStartDate = oStartDate.toISOString().split('.')[0];
+                sEndDate = oEndDate.toISOString().split('.')[0];
+            } else {
+                // Year Mode
+                sStartDate = iYear + "-01-01T00:00:00";
+                sEndDate = iYear + "-12-31T23:59:59";
             }
+
+            // Determine Date Field
+            var sDateField = (this._sOrderType === "PLANNED") ? "StartDate" : "Gstrp";
+
+            var sDateFilter = sDateField + " ge datetime'" + sStartDate + "' and " + sDateField + " le datetime'" + sEndDate + "'";
+
+            // Combine user filter with date filter
+            var sFullFilter = this._sUserFilterString ? this._sUserFilterString + " and " + sDateFilter : sDateFilter;
+
+            this._fetchData(sFullFilter);
+        },
+
+        _fetchData: function (sFilterString) {
+            var oTable = this.byId("ordersTable");
+            var oTemplate = this.byId("orderListItemTemplate").clone();
 
             // Using jQuery.ajax to bypass ODataModel's duplicate metadata ID issue
             var oModel = this.getOwnerComponent().getModel("orderModel");
@@ -163,7 +213,8 @@ sap.ui.define([
                 sServiceUrl += "/";
             }
 
-            var sUrl = sServiceUrl + sEntitySet + "?$format=json";
+            // Only format=json is needed here, filter is appended below
+            var sUrl = sServiceUrl + this._sEntitySet + "?$format=json";
 
             // Append filter if present (REQUIRED by backend to avoid 400 Bad Request)
             if (sFilterString) {

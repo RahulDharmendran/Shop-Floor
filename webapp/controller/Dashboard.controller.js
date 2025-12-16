@@ -1,5 +1,6 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
+    "sap/m/MessageToast",
     "sap/m/MessageBox",
     "sap/ui/core/BusyIndicator",
     "sap/ui/core/UIComponent",

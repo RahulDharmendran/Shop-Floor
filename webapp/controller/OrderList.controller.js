@@ -159,34 +159,9 @@ sap.ui.define([
                 success: function (data) {
                     var aResults = (data && data.d && data.d.results) ? data.d.results : [];
 
-                    // Client-side filtering
-                    var aFilteredResults = aResults.filter(function (item) {
-                        var bPassType = true;
-                        var bPassUser = true;
-
-                        // Filter by Order Type (PM vs PP)
-                        if (sOrderType === "PLANNED") {
-                            // Expecting PP orders
-                            bPassType = (item.Aurt && item.Aurt.indexOf("PP") !== -1);
-                        } else {
-                            // Expecting PM orders (Production)
-                            bPassType = (item.Aurt && item.Aurt.indexOf("PM") !== -1);
-                        }
-
-                        // Filter by User/Field if provided
-                        if (sUserFilterField && sUserFilterValue) {
-                            var sItemValue = item[sUserFilterField];
-                            if (sUserFilterOp === "EQ") {
-                                bPassUser = (sItemValue === sUserFilterValue);
-                            }
-                            // Add other operators if needed, currently only EQ is common
-                        }
-
-                        return bPassType && bPassUser;
-                    });
-
+                    // Client-side filtering REMOVED to show all data
                     var oJsonModel = new JSONModel({
-                        results: aFilteredResults
+                        results: aResults
                     });
 
                     oTable.setModel(oJsonModel, "jsonOrders");

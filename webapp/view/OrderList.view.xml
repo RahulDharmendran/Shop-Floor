@@ -15,8 +15,6 @@
                 <cells>
                     <Text id="cellOrderNumber" text="{jsonOrders>Aufnr}" maxLines="2"/> 
                     
-                    <Text id="cellMaterial" text="{jsonOrders>Matnr}" maxLines="2"/>
-                    
                     <Text id="cellOrderType" text="{jsonOrders>Aurt}" maxLines="2"/>
                     
                     <Text id="cellPlant" text="{jsonOrders>Werks}" maxLines="2"/>
@@ -58,20 +56,19 @@
                 width="auto"
                 > 
                 <columns>
-                    <Column id="colOrderNumber" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtOrderNumber" text="{i18n>colOrderNumber}"/></Column>
-                    <Column id="colMaterial" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtMaterial" text="{i18n>colMaterial}"/></Column>
-                    <Column id="colOrderType" minScreenWidth="Tablet" demandPopin="true" width="4rem"><Text id="txtOrderType" text="{i18n>colOrderType}"/></Column>
-                    <Column id="colPlant" minScreenWidth="Tablet" demandPopin="true" width="5rem"><Text id="txtPlant" text="{i18n>colPlant}"/></Column>
-                    <Column id="colDescription" minScreenWidth="Tablet" demandPopin="true" width="auto"><Text id="txtDescription" text="{i18n>colDescriptionStatus}"/></Column>
-                    <Column id="colStartDate" minScreenWidth="Desktop" demandPopin="true" hAlign="End" width="7rem"><Text id="txtStartDate" text="{i18n>colStartDate}"/></Column>
-                    <Column id="colEndDate" minScreenWidth="Desktop" demandPopin="true" hAlign="End" width="7rem"><Text id="txtEndDate" text="{i18n>colEndDate}"/></Column>
-                    <Column id="colQuantity" minScreenWidth="Tablet" demandPopin="true" hAlign="End" width="5rem"><Text id="txtQuantity" text="{i18n>colQuantity}"/></Column>
-                    <Column id="colUnit" minScreenWidth="Tablet" demandPopin="true" width="3rem"><Text id="txtUnit" text="{i18n>colUnit}"/></Column>
-                    <Column id="colCreator" minScreenWidth="Tablet" demandPopin="true" width="6rem"><Text id="txtCreator" text="{i18n>colCreator}"/></Column>
-                    <Column id="colStockCreation" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtStockCreation" text="{i18n>colStockCreationDate}"/></Column>
-                    <Column id="colProdPlant" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtProdPlant" text="{i18n>colProdPlantObjnr}"/></Column>
-                    <Column id="colMrpFtrmi" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtMrpFtrmi" text="{i18n>colMrpFtrmi}"/></Column>
-                    <Column id="colFtrmp" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtFtrmp" text="{i18n>colFtrmp}"/></Column>
+                    <Column id="colOrderNumber" width="7rem"><Text id="txtOrderNumber" text="{i18n>colOrderNumber}"/></Column>
+                    <Column id="colOrderType" width="4rem"><Text id="txtOrderType" text="{i18n>colOrderType}"/></Column>
+                    <Column id="colPlant" width="5rem"><Text id="txtPlant" text="{i18n>colPlant}"/></Column>
+                    <Column id="colDescription" width="auto"><Text id="txtDescription" text="{i18n>colDescriptionStatus}"/></Column>
+                    <Column id="colStartDate" hAlign="End" width="7rem"><Text id="txtStartDate" text="{i18n>colStartDate}"/></Column>
+                    <Column id="colEndDate" hAlign="End" width="7rem"><Text id="txtEndDate" text="{i18n>colEndDate}"/></Column>
+                    <Column id="colQuantity" hAlign="End" width="5rem"><Text id="txtQuantity" text="{i18n>colQuantity}"/></Column>
+                    <Column id="colUnit" width="3rem"><Text id="txtUnit" text="{i18n>colUnit}"/></Column>
+                    <Column id="colCreator" width="6rem"><Text id="txtCreator" text="{i18n>colCreator}"/></Column>
+                    <Column id="colStockCreation" width="7rem"><Text id="txtStockCreation" text="{i18n>colStockCreationDate}"/></Column>
+                    <Column id="colProdPlant" width="7rem"><Text id="txtProdPlant" text="{i18n>colProdPlantObjnr}"/></Column>
+                    <Column id="colMrpFtrmi" width="7rem"><Text id="txtMrpFtrmi" text="{i18n>colMrpFtrmi}"/></Column>
+                    <Column id="colFtrmp" width="7rem"><Text id="txtFtrmp" text="{i18n>colFtrmp}"/></Column>
                 </columns>
                 
             </Table>

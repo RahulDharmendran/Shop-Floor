@@ -185,9 +185,19 @@ sap.ui.define([
                 return;
             }
 
-            var sDateField = "_FilterDate";
+            // Path "" passes the whole object to the test function
+            var sDateField = "";
 
-            var fnDateFilter = function (sValue) {
+            var fnDateFilter = function (oItem) {
+                // If the object itself is invalid, skip
+                if (!oItem) {
+                    return false;
+                }
+
+                // Dynamically pick the date field from the object context
+                // This covers Planned (StartDate) and Production (Gstrp) and Fallback (PlanningStatus)
+                var sValue = oItem.StartDate || oItem.Gstrp || oItem.PlanningStatus;
+
                 if (sValue == null || sValue === "" || sValue === "NA" || sValue === "0000-00-00") {
                     return false;
                 }
@@ -195,6 +205,7 @@ sap.ui.define([
                 var oDate = null;
                 var sStrValue = String(sValue);
 
+                // 1. Handle OData JSON Date: "/Date(1750636800000)/"
                 if (sStrValue.indexOf("Date") !== -1) {
                     var aMatches = sStrValue.match(/-?\d+/);
                     if (aMatches) {
@@ -204,12 +215,14 @@ sap.ui.define([
                         }
                     }
                 }
+                // 2. Handle "YYYYMMDD" (8 digits)
                 else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
                     var y = parseInt(sStrValue.substring(0, 4), 10);
-                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1;
+                    var m = parseInt(sStrValue.substring(4, 6), 10) - 1; // Month is 0-indexed
                     var d = parseInt(sStrValue.substring(6, 8), 10);
                     oDate = new Date(y, m, d);
                 }
+                // 3. Handle Standard Date String
                 else {
                     oDate = new Date(sStrValue);
                 }
@@ -226,7 +239,7 @@ sap.ui.define([
                 }
 
                 if (sMode === "Month") {
-                    var iRecordMonth = oDate.getMonth() + 1;
+                    var iRecordMonth = oDate.getMonth() + 1; // 1-based
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {
                         return false;
@@ -260,17 +273,11 @@ sap.ui.define([
                 type: "GET",
                 dataType: "json",
                 success: function (oData) {
-                    // Pre-process Data: Create a normalized date field
-                    if (oData && oData.d && oData.d.results) {
-                        oData.d.results.forEach(function (oItem) {
-                            oItem._FilterDate = oItem.StartDate || oItem.Gstrp || oItem.PlanningStatus;
-                        });
-                    }
-
                     var oViewModel = new JSONModel(oData);
                     oViewModel.setSizeLimit(5000);
                     that.getView().setModel(oViewModel, "jsonOrders");
 
+                    // Explicitly bind items if not bound in XML
                     if (!oTable.getBindingInfo("items")) {
                         var oTemplate = that.byId("orderListItemTemplate");
                         if (oTemplate) {

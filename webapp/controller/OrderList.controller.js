@@ -142,7 +142,8 @@ sap.ui.define([
             // Set Default Select Values (for when the user decides to filter)
             var dNow = new Date();
             this.byId("filterYear").setSelectedKey(dNow.getFullYear().toString());
-            this.byId("filterMonth").setSelectedKey(dNow.getMonth().toString().padStart(2, '0'));
+            // Use 1-based month (1=Jan, 12=Dec)
+            this.byId("filterMonth").setSelectedKey((dNow.getMonth() + 1).toString());
 
             var sEncodedFilter = oArgs.filter;
             var sFilterString = decodeURIComponent(sEncodedFilter);
@@ -234,7 +235,8 @@ sap.ui.define([
                 // MONTH Check (only if mode is Month)
                 if (sMode === "Month") {
                     var iFilterMonth = parseInt(sMonth);
-                    if (iRecordMonth !== iFilterMonth) {
+                    // Compare 1-based record month (0+1=1 for Jan) with filter month (1 for Jan)
+                    if ((iRecordMonth + 1) !== iFilterMonth) {
                         return false;
                     }
                 }

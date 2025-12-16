@@ -64,18 +64,18 @@
                         <!-- Month Filter (Visible if mode=Month) -->
                         <Select id="filterMonth" width="12rem" visible="{= ${viewModel>/mode} === 'Month' }">
                             <items>
-                                <core:Item id="mJan" key="00" text="January"/>
-                                <core:Item id="mFeb" key="01" text="February"/>
-                                <core:Item id="mMar" key="02" text="March"/>
-                                <core:Item id="mApr" key="03" text="April"/>
-                                <core:Item id="mMay" key="04" text="May"/>
-                                <core:Item id="mJun" key="05" text="June"/>
-                                <core:Item id="mJul" key="06" text="July"/>
-                                <core:Item id="mAug" key="07" text="August"/>
-                                <core:Item id="mSep" key="08" text="September"/>
-                                <core:Item id="mOct" key="09" text="October"/>
-                                <core:Item id="mNov" key="10" text="November"/>
-                                <core:Item id="mDec" key="11" text="December"/>
+                                <core:Item id="mJan" key="1" text="January"/>
+                                <core:Item id="mFeb" key="2" text="February"/>
+                                <core:Item id="mMar" key="3" text="March"/>
+                                <core:Item id="mApr" key="4" text="April"/>
+                                <core:Item id="mMay" key="5" text="May"/>
+                                <core:Item id="mJun" key="6" text="June"/>
+                                <core:Item id="mJul" key="7" text="July"/>
+                                <core:Item id="mAug" key="8" text="August"/>
+                                <core:Item id="mSep" key="9" text="September"/>
+                                <core:Item id="mOct" key="10" text="October"/>
+                                <core:Item id="mNov" key="11" text="November"/>
+                                <core:Item id="mDec" key="12" text="December"/>
                             </items>
                         </Select>
 

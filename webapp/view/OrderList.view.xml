@@ -56,38 +56,38 @@
                 width="auto"
                 >
                 <headerToolbar>
-                    <Toolbar>
-                        <Title text="{i18n>orderListTableTitle}" level="H2"/>
-                        <ToolbarSpacer/>
+                    <Toolbar id="tableToolbar">
+                        <Title id="tableTitle" text="{i18n>orderListTableTitle}" level="H2"/>
+                        <ToolbarSpacer id="tableToolbarSpacer"/>
                         
                         <!-- Month Filter (Visible if mode=Month) -->
                         <Select id="filterMonth" width="12rem" visible="{= ${viewModel>/mode} === 'Month' }">
                             <items>
-                                <core:Item key="00" text="January"/>
-                                <core:Item key="01" text="February"/>
-                                <core:Item key="02" text="March"/>
-                                <core:Item key="03" text="April"/>
-                                <core:Item key="04" text="May"/>
-                                <core:Item key="05" text="June"/>
-                                <core:Item key="06" text="July"/>
-                                <core:Item key="07" text="August"/>
-                                <core:Item key="08" text="September"/>
-                                <core:Item key="09" text="October"/>
-                                <core:Item key="10" text="November"/>
-                                <core:Item key="11" text="December"/>
+                                <core:Item id="mJan" key="00" text="January"/>
+                                <core:Item id="mFeb" key="01" text="February"/>
+                                <core:Item id="mMar" key="02" text="March"/>
+                                <core:Item id="mApr" key="03" text="April"/>
+                                <core:Item id="mMay" key="04" text="May"/>
+                                <core:Item id="mJun" key="05" text="June"/>
+                                <core:Item id="mJul" key="06" text="July"/>
+                                <core:Item id="mAug" key="07" text="August"/>
+                                <core:Item id="mSep" key="08" text="September"/>
+                                <core:Item id="mOct" key="09" text="October"/>
+                                <core:Item id="mNov" key="10" text="November"/>
+                                <core:Item id="mDec" key="11" text="December"/>
                             </items>
                         </Select>
 
                         <!-- Year Filter (Always visible for context or fallback) -->
                         <Select id="filterYear" width="8rem">
                             <items>
-                                <core:Item key="2024" text="2024"/>
-                                <core:Item key="2025" text="2025"/>
-                                <core:Item key="2026" text="2026"/>
+                                <core:Item id="y2024" key="2024" text="2024"/>
+                                <core:Item id="y2025" key="2025" text="2025"/>
+                                <core:Item id="y2026" key="2026" text="2026"/>
                             </items>
                         </Select>
                         
-                        <Button text="Go" type="Emphasized" press="onFilterSearch" />
+                        <Button id="btnGo" text="Go" type="Emphasized" press="onFilterSearch" />
                     </Toolbar>
                 </headerToolbar> 
                 <columns>

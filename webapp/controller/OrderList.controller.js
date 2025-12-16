@@ -196,44 +196,53 @@ sap.ui.define([
 
             // Client-Side Filter Function
             var fnDateFilter = function (sValue) {
-                if (!sValue || sValue === "0000-00-00" || sValue === "" || sValue === "NA") {
+                if (sValue === null || sValue === undefined || sValue === "0000-00-00" || sValue === "" || sValue === "NA") {
                     return false;
                 }
 
                 var oDate = null;
+                var sStrValue = String(sValue);
 
-                // 1. Handle "/Date(...)/"
-                if (typeof sValue === 'string' && sValue.indexOf("Date(") !== -1) {
-                    var aMatches = /\/Date\((-?\d+)\)\//.exec(sValue);
+                // 1. Handle OData JSON Date: "/Date(1750636800000)/" or similar
+                // Relaxed check: Look for "Date" and any sequence of digits
+                if (sStrValue.indexOf("Date") !== -1) {
+                    var aMatches = sStrValue.match(/-?\d+/);
                     if (aMatches) {
-                        oDate = new Date(parseInt(aMatches[1], 10));
+                        var iTimestamp = parseInt(aMatches[0], 10);
+                        if (!isNaN(iTimestamp)) {
+                            oDate = new Date(iTimestamp);
+                        }
                     }
                 }
-                // 2. Handle "YYYYMMDD"
-                else if (typeof sValue === 'string' && sValue.length === 8 && sValue.match(/^\d{8}$/)) {
-                    var y = sValue.substring(0, 4);
-                    var m = sValue.substring(4, 6);
-                    var d = sValue.substring(6, 8);
+                // 2. Handle "YYYYMMDD" (8 digits)
+                else if (sStrValue.length === 8 && /^\d{8}$/.test(sStrValue)) {
+                    var y = sStrValue.substring(0, 4);
+                    var m = sStrValue.substring(4, 6);
+                    var d = sStrValue.substring(6, 8);
                     oDate = new Date(y + "-" + m + "-" + d);
                 }
-                // 3. Handle Standard Date String or Date Object
+                // 3. Handle Standard Date String (YYYY-MM-DD or other parsable formats)
                 else {
-                    oDate = new Date(sValue);
+                    oDate = new Date(sStrValue);
                 }
 
+                // Validity Check
                 if (!oDate || isNaN(oDate.getTime())) {
                     return false;
                 }
 
+                // Extract Year and Month (1-based)
                 var iRecordYear = oDate.getFullYear();
-                var iRecordMonth = oDate.getMonth() + 1; // 1-based (Jan=1)
+                var iRecordMonth = oDate.getMonth() + 1;
 
                 var iFilterYear = parseInt(sYear, 10);
 
+                // Year Check
                 if (iRecordYear !== iFilterYear) {
                     return false;
                 }
 
+                // Month Check (only if mode is Month)
                 if (sMode === "Month") {
                     var iFilterMonth = parseInt(sMonth, 10);
                     if (iRecordMonth !== iFilterMonth) {

@@ -125,21 +125,26 @@ sap.ui.define([
 
             var sOrderType = sEntitySet.includes("PLANNED") ? "PLANNED" : "PRODUCTION";
 
-            // Capture the Mode (Month/Year)
-            var sMode = oArgs.mode || "Year"; // Default to Year if missing
+            // Retrieve the Mode (Month/Year) from the global Component model
+            var sMode = "Year"; // Default
+            var oComponent = this.getOwnerComponent();
+            var oFilterModel = oComponent.getModel("filterContext");
+            if (oFilterModel) {
+                sMode = oFilterModel.getProperty("/mode") || "Year";
+            }
 
-            // Set View Model for UI Visibility
+            // Set View Model for UI Visibility (Month toggle)
             var oViewModel = new JSONModel({
                 mode: sMode
             });
             this.getView().setModel(oViewModel, "viewModel");
 
-            // Set Default Select Values
+            // Set Default Select Values (for when the user decides to filter)
             var dNow = new Date();
             this.byId("filterYear").setSelectedKey(dNow.getFullYear().toString());
-            this.byId("filterMonth").setSelectedKey(dNow.getMonth().toString().padStart(2, '0')); // 0-indexed to 00-11
+            this.byId("filterMonth").setSelectedKey(dNow.getMonth().toString().padStart(2, '0'));
 
-            var sEncodedFilter = oArgs.filter; // e.g. "Creator eq 'TRAINEE'"
+            var sEncodedFilter = oArgs.filter;
             var sFilterString = decodeURIComponent(sEncodedFilter);
 
             // Store these for the generic search function
@@ -163,8 +168,9 @@ sap.ui.define([
 
             this._updateColumnNames(sOrderType);
 
-            // Trigger initial search
-            this.onFilterSearch();
+            // Trigger initial search - USER ID FILTER ONLY (As requested: "User ID as usual")
+            // We do NOT apply the date filter automatically. The user must click 'Go' to apply date filters.
+            this._fetchData(sFilterString);
         },
 
         onFilterSearch: function () {

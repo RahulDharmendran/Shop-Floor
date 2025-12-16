@@ -103,7 +103,7 @@
         },
         {
           "name": "OrderList",
-          "pattern": "orders/{orderType}/{mode}/{filter}",
+          "pattern": "orders/{orderType}/{filter}",
           "target": [
             "TargetOrderList"
           ]

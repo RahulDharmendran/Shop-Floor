@@ -1,8 +1,10 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/m/MessageToast",
-    "sap/ui/core/UIComponent"
-], function (Controller, MessageToast, UIComponent) {
+    "sap/m/MessageBox",
+    "sap/ui/core/BusyIndicator",
+    "sap/ui/core/UIComponent",
+    "sap/ui/model/json/JSONModel"
+], function (Controller, MessageToast, MessageBox, BusyIndicator, UIComponent, JSONModel) {
     "use strict";
 
     // Hardcoded global variable 'sLoggedInUser' is REMOVED.
@@ -31,14 +33,23 @@ sap.ui.define([
         // Helper to navigate to OrderList with Mode (Month/Year)
         _navigateToOrderList: function (sEntitySet, sCreatorField, sMode) {
 
+            // Store the mode in a global model (attached to Component) so OrderList can read it
+            // without polluting the URL
+            var oComponent = this.getOwnerComponent();
+            var oFilterModel = oComponent.getModel("filterContext");
+            if (!oFilterModel) {
+                oFilterModel = new JSONModel();
+                oComponent.setModel(oFilterModel, "filterContext");
+            }
+            oFilterModel.setProperty("/mode", sMode);
+
             // Construct a basic filter for the user ID
-            // The OrderList controller will handle the rest based on 'mode'
             var sUserFilter = sCreatorField + " eq '" + (this._sLoggedInUser || "") + "'";
 
             var oRouter = UIComponent.getRouterFor(this);
+            // Reverted to original route structure: orders/{orderType}/{filter}
             oRouter.navTo("OrderList", {
                 orderType: sEntitySet,
-                mode: sMode, // Pass the mode (Month or Year)
                 filter: encodeURIComponent(sUserFilter)
             });
         },

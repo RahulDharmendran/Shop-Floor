@@ -1,0 +1,24 @@
+<mvc:View controllerName="shopfloor.controller.Login"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout">
+    
+    <Page id="loginPage" title="Shop Floor Portal Login">
+        <content>
+            <FlexBox id="loginFlexBox" alignItems="Center" justifyContent="Center" height="100%" direction="Column">
+                <Panel id="loginPanel" width="400px" headerText="Engineer Authentication" class="sapUiResponsiveMargin">
+                    <content>
+                        <VBox id="loginVBox" class="sapUiSmallMargin">
+                            <Label id="labelUser" text="User ID" required="true"/>
+                            <Input id="idUser" placeholder="Enter User ID" />
+                            
+                            <Label id="labelPass" text="Password" required="true"/>
+                            <Input id="idPass" type="Password" placeholder="Enter Password" />
+                            
+                            <Button id="loginButton" text="Login" type="Emphasized" press="onLoginPress" width="100%" class="sapUiSmallMarginTop"/>
+                        </VBox>
+                    </content>
+                </Panel>
+            </FlexBox>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,138 @@
+{
+  "_version": "1.58.0",
+  "sap.app": {
+    "id": "shopfloor",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZRD_SF_PROJ_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    },
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.20.0",
+      "toolsId": "fa0c0704-5ed3-43f4-b06b-04ec364f2d44"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.76.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "shopfloor.i18n.i18n"
+        }
+      },
+      "orderModel": {  
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "shopfloor.view",
+        "async": true
+      },
+      "routes": [
+        {
+          "name": "RouteLogin",
+          "pattern": "",
+          "target": [
+            "TargetLogin"
+          ]
+        },
+        {
+          "name": "RouteDashboard",
+          "pattern": "dashboard/{userId}",
+          "target": [
+            "TargetDashboard"
+          ]
+        },
+        {
+          "name": "OrderList",
+          "pattern": "orders/{orderType}/{filter}",
+          "target": [
+            "TargetOrderList"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetLogin": {
+          "id": "Login",
+          "name": "Login",
+          "viewName": "Login" 
+        },
+        "TargetDashboard": {
+          "id": "Dashboard",
+          "name": "Dashboard",
+          "viewName": "Dashboard" 
+        },
+        "TargetOrderList": {
+          "id": "OrderList",
+          "name": "OrderList",
+          "viewName": "OrderList", 
+          "viewPath": "shopfloor.view"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "shopfloor.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

@@ -1,0 +1,80 @@
+<mvc:View
+    controllerName="shopfloor.controller.OrderList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    
+    <Page
+        id="orderListPage"
+        title="{i18n>orderListPageTitle}"
+        showNavButton="true"
+        navButtonPress="onNavBack"
+        class="sapUiSizeCompact" > 
+        
+        <dependents>
+            <ColumnListItem id="orderListItemTemplate" type="Active">
+                <cells>
+                    <Text id="cellOrderNumber" text="{orderModel>OrderNumber}{orderModel>Aufnr}" maxLines="2"/> 
+                    
+                    <Text id="cellMaterial" text="{orderModel>MaterialNumber}{orderModel>Matnr}" maxLines="2"/>
+                    
+                    <Text id="cellOrderType" text="{orderModel>OrderType}{orderModel>Aurt}" maxLines="2"/>
+                    
+                    <Text id="cellPlant" text="{orderModel>PlanningPlant}{orderModel>Werks}" maxLines="2"/>
+                    
+                    <Text id="cellDescription" text="{orderModel>PlanningStatus}{orderModel>Ktext}" maxLines="2"/>
+                    
+                    <Text id="cellStartDate" 
+                          text="{path: 'orderModel>StartDate', formatter: '.formatter.date'} {path: 'orderModel>Gstrp', formatter: '.formatter.date'}" 
+                          maxLines="2"/>
+                    
+                    <Text id="cellEndDate" 
+                          text="{path: 'orderModel>EndDate', formatter: '.formatter.date'} {path: 'orderModel>Gltrp', formatter: '.formatter.date'}" 
+                          maxLines="2"/>
+                    
+                    <Text id="cellQuantity" text="{orderModel>PlannedQuantity}{orderModel>Gamng}" maxLines="2"/>
+                    
+                    <Text id="cellUnit" text="{orderModel>Unit}{orderModel>Gmein}" maxLines="2"/>
+                    
+                    <Text id="cellCreator" text="{orderModel>Creator}{orderModel>Ernam}" maxLines="2"/>
+                    
+                    <Text id="cellStockCreation" 
+                          text="{orderModel>StockCategory} {path: 'orderModel>Erdat', formatter: '.formatter.date'}" 
+                          maxLines="2"/>
+                    
+                    <Text id="cellProdPlant" text="{orderModel>ProductionPlant}{orderModel>Objnr}" maxLines="2"/>
+                    
+                    <Text id="cellMrpFtrmi" 
+                          text="{orderModel>MrpGroup} {path: 'orderModel>Ftrmi', formatter: '.formatter.date'}" 
+                          maxLines="2"/>
+                    
+                    <Text id="cellFtrmp" text="{path: 'orderModel>Ftrmp', formatter: '.formatter.date'}" maxLines="2"/>
+                </cells>
+            </ColumnListItem>
+        </dependents>
+
+        <content>
+            <Table
+                id="ordersTable"
+                width="auto"
+                > 
+                <columns>
+                    <Column id="colOrderNumber" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtOrderNumber" text="{i18n>colOrderNumber}"/></Column>
+                    <Column id="colMaterial" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtMaterial" text="{i18n>colMaterial}"/></Column>
+                    <Column id="colOrderType" minScreenWidth="Tablet" demandPopin="true" width="4rem"><Text id="txtOrderType" text="{i18n>colOrderType}"/></Column>
+                    <Column id="colPlant" minScreenWidth="Tablet" demandPopin="true" width="5rem"><Text id="txtPlant" text="{i18n>colPlant}"/></Column>
+                    <Column id="colDescription" minScreenWidth="Tablet" demandPopin="true" width="auto"><Text id="txtDescription" text="{i18n>colDescriptionStatus}"/></Column>
+                    <Column id="colStartDate" minScreenWidth="Desktop" demandPopin="true" hAlign="End" width="7rem"><Text id="txtStartDate" text="{i18n>colStartDate}"/></Column>
+                    <Column id="colEndDate" minScreenWidth="Desktop" demandPopin="true" hAlign="End" width="7rem"><Text id="txtEndDate" text="{i18n>colEndDate}"/></Column>
+                    <Column id="colQuantity" minScreenWidth="Tablet" demandPopin="true" hAlign="End" width="5rem"><Text id="txtQuantity" text="{i18n>colQuantity}"/></Column>
+                    <Column id="colUnit" minScreenWidth="Tablet" demandPopin="true" width="3rem"><Text id="txtUnit" text="{i18n>colUnit}"/></Column>
+                    <Column id="colCreator" minScreenWidth="Tablet" demandPopin="true" width="6rem"><Text id="txtCreator" text="{i18n>colCreator}"/></Column>
+                    <Column id="colStockCreation" minScreenWidth="Tablet" demandPopin="true" width="7rem"><Text id="txtStockCreation" text="{i18n>colStockCreationDate}"/></Column>
+                    <Column id="colProdPlant" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtProdPlant" text="{i18n>colProdPlantObjnr}"/></Column>
+                    <Column id="colMrpFtrmi" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtMrpFtrmi" text="{i18n>colMrpFtrmi}"/></Column>
+                    <Column id="colFtrmp" minScreenWidth="Desktop" demandPopin="true" width="7rem"><Text id="txtFtrmp" text="{i18n>colFtrmp}"/></Column>
+                </columns>
+                
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

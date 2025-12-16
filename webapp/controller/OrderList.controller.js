@@ -1,8 +1,8 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/core/UIComponent",
-    "sap/ui/model/Filter",      
-    "sap/ui/model/FilterOperator", 
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "sap/m/Text",
     "sap/ui/core/format/DateFormat",
     "sap/ui/model/json/JSONModel"
@@ -12,21 +12,21 @@ sap.ui.define([
     var oDateFormat = DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
 
     return Controller.extend("shopfloor.controller.OrderList", {
-        
-        _sCurrentUserId: null, 
+
+        _sCurrentUserId: null,
 
         formatter: {
-            date: function(sDate) {
+            date: function (sDate) {
                 // ... (Formatter remains unchanged)
                 if (!sDate || sDate === '0000-00-00') {
                     return "";
                 }
-                
+
                 try {
                     if (typeof sDate === 'string' && sDate.length === 8 && sDate.match(/^\d{8}$/)) {
                         sDate = sDate.substring(0, 4) + "-" + sDate.substring(4, 6) + "-" + sDate.substring(6, 8);
                     }
-                    
+
                     var d = new Date(sDate);
                     if (isNaN(d.getTime())) {
                         return sDate;
@@ -42,16 +42,16 @@ sap.ui.define([
             var oRouter = UIComponent.getRouterFor(this);
             oRouter.getRoute("OrderList").attachPatternMatched(this._onRouteMatched, this);
         },
-        
+
         // _updateColumnNames remains unchanged for header logic
-        _updateColumnNames: function(sType) {
+        _updateColumnNames: function (sType) {
             var oTable = this.byId("ordersTable");
             if (!oTable) return;
             // ... (rest of the _updateColumnNames logic)
-             var aColumns = oTable.getColumns();
+            var aColumns = oTable.getColumns();
             // Assuming the i18n model is available
-            var oResourceBundle = this.getView().getModel("i18n").getResourceBundle(); 
-            
+            var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+
             // Map column IDs to their generic i18n base keys
             var aColumnMap = [
                 { id: "colOrderNumber", baseKey: "colOrderNumber" },
@@ -64,21 +64,21 @@ sap.ui.define([
                 { id: "colQuantity", baseKey: "colQuantity" },
                 { id: "colUnit", baseKey: "colUnit" },
                 { id: "colCreator", baseKey: "colCreator" },
-                { id: "colStockCreation", baseKey: "colStockCreationDate" }, 
-                { id: "colProdPlant", baseKey: "colProdPlantObjnr" }, 
-                { id: "colMrpFtrmi", baseKey: "colMrpFtrmi" }, 
-                { id: "colFtrmp", baseKey: "colFtrmp" } 
+                { id: "colStockCreation", baseKey: "colStockCreationDate" },
+                { id: "colProdPlant", baseKey: "colProdPlantObjnr" },
+                { id: "colMrpFtrmi", baseKey: "colMrpFtrmi" },
+                { id: "colFtrmp", baseKey: "colFtrmp" }
             ];
 
-            aColumns.forEach(function(oColumn) {
+            aColumns.forEach(function (oColumn) {
                 // Safer way to get the local ID, avoiding issues with component IDs
-                var sColumnId = oColumn.getId().split("---")[1]; 
+                var sColumnId = oColumn.getId().split("---")[1];
                 if (sColumnId) {
                     sColumnId = sColumnId.split("--").pop();
                 } else {
-                    sColumnId = oColumn.getId(); 
+                    sColumnId = oColumn.getId();
                 }
-                
+
                 var oMapItem = aColumnMap.find(item => item.id === sColumnId);
 
                 if (oMapItem) {
@@ -90,7 +90,7 @@ sap.ui.define([
                     if (sHeaderText === sSpecificKey || !sHeaderText) {
                         sHeaderText = oResourceBundle.getText(oMapItem.baseKey);
                     }
-                    
+
                     // Update the Text control inside the column header
                     oColumn.getHeader().setText(sHeaderText);
                 }
@@ -101,22 +101,22 @@ sap.ui.define([
         _onRouteMatched: function (oEvent) {
             var oArgs = oEvent.getParameter("arguments");
             var sEntitySet = oArgs.orderType;
-            
+
             var sOrderType = sEntitySet.includes("PLANNED") ? "PLANNED" : "PRODUCTION";
             var sEncodedFilter = oArgs.filter; // e.g. "Ernam eq 'TRAINEE'"
-            var sFilterString = decodeURIComponent(sEncodedFilter); 
+            var sFilterString = decodeURIComponent(sEncodedFilter);
 
             var oTable = this.byId("ordersTable");
             var oPage = this.byId("orderListPage");
-            
+
             var sTitle = sOrderType === "PLANNED" ? "Planned Orders List" : "Production Orders List";
             oPage.setTitle(sTitle);
-            
+
             this._updateColumnNames(sOrderType);
 
             // Create or get the template
-            var oTemplate = this.byId("orderListItemTemplate").clone(); 
-            
+            var oTemplate = this.byId("orderListItemTemplate").clone();
+
             // Extract User Filter if present
             var sUserFilterField = null;
             var sUserFilterValue = null;
@@ -125,24 +125,29 @@ sap.ui.define([
             if (sFilterString) {
                 var aParts = sFilterString.match(/(\w+)\s(eq|ne|gt|ge|lt|le)\s'([^']+)'/i);
                 if (aParts && aParts.length >= 4) {
-                    sUserFilterField = aParts[1]; 
-                    sUserFilterOp = aParts[2].toUpperCase(); 
-                    sUserFilterValue = aParts[3]; 
+                    sUserFilterField = aParts[1];
+                    sUserFilterOp = aParts[2].toUpperCase();
+                    sUserFilterValue = aParts[3];
 
-                    this._sCurrentUserId = sUserFilterValue; 
+                    this._sCurrentUserId = sUserFilterValue;
                 }
             }
 
             // Using jQuery.ajax to bypass ODataModel's duplicate metadata ID issue
             var oModel = this.getOwnerComponent().getModel("orderModel");
             var sServiceUrl = oModel.sServiceUrl;
-            
+
             // Ensure trailing slash
             if (!sServiceUrl.endsWith("/")) {
                 sServiceUrl += "/";
             }
 
             var sUrl = sServiceUrl + sEntitySet + "?$format=json";
+
+            // Append filter if present (REQUIRED by backend to avoid 400 Bad Request)
+            if (sFilterString) {
+                sUrl += "&$filter=" + encodeURIComponent(sFilterString);
+            }
 
             var that = this;
             oTable.setBusy(true);
@@ -151,11 +156,11 @@ sap.ui.define([
                 url: sUrl,
                 method: "GET",
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     var aResults = (data && data.d && data.d.results) ? data.d.results : [];
-                    
+
                     // Client-side filtering
-                    var aFilteredResults = aResults.filter(function(item) {
+                    var aFilteredResults = aResults.filter(function (item) {
                         var bPassType = true;
                         var bPassUser = true;
 
@@ -185,16 +190,16 @@ sap.ui.define([
                     });
 
                     oTable.setModel(oJsonModel, "jsonOrders");
-                    
+
                     oTable.unbindItems();
                     oTable.bindItems({
                         path: "jsonOrders>/results",
                         template: oTemplate
                     });
-                    
+
                     oTable.setBusy(false);
                 },
-                error: function(err) {
+                error: function (err) {
                     oTable.setBusy(false);
                     console.error("Failed to fetch data via AJAX", err);
                     // Fallback or error message could go here
@@ -204,7 +209,7 @@ sap.ui.define([
 
         onNavBack: function () {
             var oRouter = UIComponent.getRouterFor(this);
-            var sUserIdToPass = this._sCurrentUserId || "GUEST"; 
+            var sUserIdToPass = this._sCurrentUserId || "GUEST";
 
             oRouter.navTo("RouteDashboard", {
                 userId: sUserIdToPass

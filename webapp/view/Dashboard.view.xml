@@ -3,7 +3,7 @@
     xmlns="sap.m"
     xmlns:l="sap.ui.layout"
     xmlns:mc="sap.suite.ui.microchart">
-    <Page id="dashboardPage" title="{i18n>dashboardPageTitle}" showNavButton="true" navButtonPress="onNavBack">
+    <Page id="dashboardPage" title="{i18n>dashboardPageTitle}" showNavButton="true" navButtonPress="onNavBack" class="myDashboardBackground">
         <content>
             <l:VerticalLayout id="dashboardLayout" class="sapUiContentPadding" width="100%">
                 <Title id="overviewTitle" text="Overview" titleStyle="H2" class="sapUiSmallMarginBegin"/>

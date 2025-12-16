@@ -9,7 +9,7 @@
         title="{i18n>orderListPageTitle}"
         showNavButton="true"
         navButtonPress="onNavBack"
-        class="sapUiSizeCompact" > 
+        class="sapUiSizeCompact myOrderListBackground" > 
         
         <dependents>
             <ColumnListItem id="orderListItemTemplate" type="Active">
